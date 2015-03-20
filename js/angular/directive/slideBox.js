@@ -54,7 +54,9 @@ function($timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory) {
       pagerClick: '&',
       disableScroll: '@',
       onSlideChanged: '&',
-      activeSlide: '=?'
+      activeSlide: '=?',
+      $onSlide: '&onSlide',
+      $onSlideComplete: '&onSlideComplete'
     },
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var _this = this;
@@ -81,7 +83,9 @@ function($timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory) {
           $scope.activeSlide = slideIndex;
           // Try to trigger a digest
           $timeout(function() {});
-        }
+        },
+        onSlide: $scope.$onSlide,
+        onSlideEnd: $scope.$onSlideComplete,
       });
 
       slider.enableSlide($scope.$eval($attrs.disableScroll) !== true);

@@ -361,6 +361,8 @@ ionic.views.Slider = ionic.views.View.inherit({
             translate(index+1, delta.x + slidePos[index+1], 0);
           }
 
+          options.onSlide ? options.onSlide(event) : '';
+
         }
 
       },
@@ -450,6 +452,8 @@ ionic.views.Slider = ionic.views.View.inherit({
           element.removeEventListener('mouseup', events, false);
           document.removeEventListener('mouseup', events, false);
         }
+
+        options.onSlideEnd ? options.onSlideEnd(event) : '';
 
       },
       transitionEnd: function(event) {
