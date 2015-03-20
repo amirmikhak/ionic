@@ -2,11 +2,12 @@
   "name": "ionic",
   "version": "1.0.0-rc.1",
   "codename": "osmium-ostrich",
-  "homepage": "https://github.com/driftyco/ionic",
+  "homepage": "https://github.com/amirmikhak/ionic",
   "authors": [
     "Max Lynch <max@drifty.com>",
     "Adam Bradley <adam@drifty.com>",
-    "Ben Sperry <ben@drifty.com>"
+    "Ben Sperry <ben@drifty.com>",
+    "Amir Mikhak <amirmikhak@notidle.com>"
   ],
   "description": "Advanced HTML5 hybrid mobile app development framework.",
   "main": [
