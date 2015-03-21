@@ -91,6 +91,10 @@ function($scope,
     return scrollView.getValues();
   };
 
+  self.getZoomLevel = function() {
+    return scrollView.getValues().zoom;
+  };
+
   self.resize = function() {
     return $timeout(resize).then(function() {
       $element && $element.triggerHandler('scroll.resize');

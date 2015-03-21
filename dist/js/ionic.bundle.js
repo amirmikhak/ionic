@@ -4361,7 +4361,9 @@ ionic.views.Scroll = ionic.views.View.inherit({
       // The ms interval for triggering scroll events
       scrollEventInterval: 10,
 
-      freeze: false,
+      freezeAll: false,
+
+      freezeScroll: false,
 
       getContentWidth: function() {
         return Math.max(self.__content.scrollWidth, self.__content.offsetWidth);
@@ -4390,11 +4392,20 @@ ionic.views.Scroll = ionic.views.View.inherit({
 
     };
 
-    self.freeze = function(shouldFreeze) {
+    self.freezeAll = function(shouldFreezeAll) {
       if (arguments.length) {
-        self.options.freeze = shouldFreeze;
+        self.options.freezeAll = shouldFreezeAll;
       }
-      return self.options.freeze;
+      return self.options.freezeAll;
+    };
+
+    self.freeze = self.freezeAll;
+
+    self.freezeScroll = function(shouldFreezeScroll) {
+      if (arguments.length) {
+        self.options.freezeScroll = shouldFreezeScroll;
+      }
+      return self.options.freezeScroll;
     };
 
     self.setScrollStart = function() {
@@ -4735,7 +4746,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
     };
 
     self.touchMove = function(e) {
-      if (self.options.freeze || !self.__isDown ||
+      if (self.options.freezeAll || !self.__isDown ||
         (!self.__isDown && e.defaultPrevented) ||
         (e.target.tagName === 'TEXTAREA' && e.target.parentElement.querySelector(':focus')) ) {
         return;
@@ -4797,7 +4808,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
 
     self.mouseWheel = ionic.animationFrameThrottle(function(e) {
       var scrollParent = ionic.DomUtil.getParentOrSelfWithClass(e.target, 'ionic-scroll');
-      if (!self.options.freeze && scrollParent === self.__container) {
+      if (!self.options.freezeAll && scrollParent === self.__container) {
 
         self.hintResize();
         self.scrollBy(
@@ -4856,7 +4867,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
       };
 
       self.mouseMove = function(e) {
-        if (self.options.freeze || !mousedown || (!mousedown && e.defaultPrevented)) {
+        if (self.options.freezeAll || !mousedown || (!mousedown && e.defaultPrevented)) {
           return;
         }
 
@@ -5785,7 +5796,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
         }
       }
 
-      if (self.__enableScrollX) {
+      if (self.__enableScrollX && !self.options.freezeScroll) {
 
         scrollLeft -= moveX * self.options.speedMultiplier;
         var maxScrollLeft = self.__maxScrollLeft;
@@ -5810,7 +5821,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
       }
 
       // Compute new vertical scroll position
-      if (self.__enableScrollY) {
+      if (self.__enableScrollY && !self.options.freezeScroll) {
 
         scrollTop -= moveY * self.options.speedMultiplier;
         var maxScrollTop = self.__maxScrollTop;
@@ -44927,6 +44938,7 @@ IonicModule
    *  - `{number}` `top` The distance the user has scrolled from the top (starts at 0).
    */
   'getScrollPosition',
+  'getZoomLevel',
   /**
    * @ngdoc method
    * @name $ionicScrollDelegate#anchorScroll
@@ -47990,6 +48002,10 @@ function($scope,
 
   self.getScrollPosition = function() {
     return scrollView.getValues();
+  };
+
+  self.getZoomLevel = function() {
+    return scrollView.getValues().zoom;
   };
 
   self.resize = function() {
@@ -52804,6 +52820,8 @@ function($timeout, $controller, $ionicBind) {
           direction: '@',
           paging: '@',
           $onScroll: '&onScroll',
+          $onScrollComplete: '&onScrollComplete',
+          scrollEventInterval: '@',
           scroll: '@',
           scrollbarX: '@',
           scrollbarY: '@',
@@ -52838,7 +52856,15 @@ function($timeout, $controller, $ionicBind) {
           zooming: $scope.$eval($scope.zooming) === true,
           maxZoom: $scope.$eval($scope.maxZoom) || 3,
           minZoom: $scope.$eval($scope.minZoom) || 0.5,
-          preventDefault: true
+          preventDefault: true,
+          scrollEventInterval: parseInt($scope.scrollEventInterval, 10) || 10,
+          scrollingComplete: function() {
+            $scope.$onScrollComplete({
+              scrollTop: this.__scrollTop,
+              scrollLeft: this.__scrollLeft,
+              zoom: this.__zoomLevel
+            });
+          }
         };
         if (isPaging) {
           scrollViewOptions.speedMultiplier = 0.8;

@@ -119,6 +119,7 @@ IonicModule
    *  - `{number}` `top` The distance the user has scrolled from the top (starts at 0).
    */
   'getScrollPosition',
+  'getZoomLevel',
   /**
    * @ngdoc method
    * @name $ionicScrollDelegate#anchorScroll

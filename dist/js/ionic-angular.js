@@ -3778,6 +3778,7 @@ IonicModule
    *  - `{number}` `top` The distance the user has scrolled from the top (starts at 0).
    */
   'getScrollPosition',
+  'getZoomLevel',
   /**
    * @ngdoc method
    * @name $ionicScrollDelegate#anchorScroll
@@ -6841,6 +6842,10 @@ function($scope,
 
   self.getScrollPosition = function() {
     return scrollView.getValues();
+  };
+
+  self.getZoomLevel = function() {
+    return scrollView.getValues().zoom;
   };
 
   self.resize = function() {
@@ -11655,6 +11660,8 @@ function($timeout, $controller, $ionicBind) {
           direction: '@',
           paging: '@',
           $onScroll: '&onScroll',
+          $onScrollComplete: '&onScrollComplete',
+          scrollEventInterval: '@',
           scroll: '@',
           scrollbarX: '@',
           scrollbarY: '@',
@@ -11689,7 +11696,15 @@ function($timeout, $controller, $ionicBind) {
           zooming: $scope.$eval($scope.zooming) === true,
           maxZoom: $scope.$eval($scope.maxZoom) || 3,
           minZoom: $scope.$eval($scope.minZoom) || 0.5,
-          preventDefault: true
+          preventDefault: true,
+          scrollEventInterval: parseInt($scope.scrollEventInterval, 10) || 10,
+          scrollingComplete: function() {
+            $scope.$onScrollComplete({
+              scrollTop: this.__scrollTop,
+              scrollLeft: this.__scrollLeft,
+              zoom: this.__zoomLevel
+            });
+          }
         };
         if (isPaging) {
           scrollViewOptions.speedMultiplier = 0.8;
